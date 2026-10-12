@@ -59,8 +59,8 @@
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(250px, 1fr) minmax(235px, 300px);
-      gap: 16px;
+      grid-template-columns: minmax(230px, 260px) minmax(0, 1fr);
+      gap: 12px;
       align-items: start;
     }
 
@@ -70,15 +70,15 @@
       box-shadow: 4px 4px 0 var(--line);
     }
 
-    .game-card { padding: 12px; }
-    .game-topline { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 9px; font-size: .75rem; }
+    .game-card { padding: 8px; }
+    .game-topline { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: .7rem; }
     .live-indicator { font-family: ui-monospace, monospace; }
     .live-indicator::before { content: "●"; color: var(--green); margin-right: 6px; }
     .live-indicator.paused::before, .live-indicator.ended::before { color: var(--accent); }
 
     .board-wrap {
       position: relative;
-      width: min(100%, 420px);
+      width: min(100%, 220px);
       margin: 0 auto;
       border: 2px solid var(--line);
       background: #f1eee5;
@@ -108,14 +108,14 @@
 
     .touch-controls {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 7px;
-      max-width: 420px;
-      margin: 11px auto 0;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      max-width: 280px;
+      margin: 7px auto 0;
     }
 
     .touch-controls button, .action-button {
-      min-height: 43px;
+      min-height: 34px;
       border: 1.5px solid var(--line);
       background: #fffdf7;
       color: var(--ink);
@@ -127,57 +127,86 @@
 
     .touch-controls button:active, .action-button:active { transform: translate(2px, 2px); box-shadow: none; }
     button:focus-visible { outline: 3px solid #3975a5; outline-offset: 2px; }
-    .touch-controls button { min-width: 0; padding: 2px; font-size: 1.15rem; }
-    .touch-controls .drop-button { font-size: .72rem; }
-    .touch-controls .hold-button { font-size: .63rem; }
+    .touch-controls button { min-width: 0; padding: 2px; font-size: 1rem; }
+    .touch-controls .drop-button, .touch-controls .hold-button { font-size: .67rem; }
 
-    .key-hint { margin: 10px 0 0; text-align: center; color: var(--muted); font-size: .63rem; line-height: 1.7; }
+    .key-hint { margin: 5px 0 0; text-align: center; color: var(--muted); font-size: .57rem; line-height: 1.5; }
 
-    .sidebar { display: grid; gap: 12px; }
-    .panel { padding: 13px; }
+    .sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .panel { padding: 9px; min-width: 0; }
+    .boss-panel, .rules-panel, .actions-panel { grid-column: 1 / -1; }
     .panel-title {
-      margin: 0 0 10px;
-      padding-bottom: 7px;
+      margin: 0 0 6px;
+      padding-bottom: 5px;
       border-bottom: 1px solid #b9b5a9;
       font-family: ui-monospace, "Cascadia Code", monospace;
       font-size: .76rem;
       letter-spacing: .08em;
     }
 
-    .boss-name { margin: 0 0 3px; font-size: 1.16rem; }
-    .boss-caption { margin: 0 0 11px; color: var(--muted); font-size: .78rem; }
-    .boss-face { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 1.1rem; letter-spacing: .12em; }
-    .hp-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-family: ui-monospace, monospace; font-size: .73rem; }
-    .hp-track { height: 13px; overflow: hidden; border: 1.5px solid var(--line); background: #e3dfd4; }
+    .boss-name { margin: 0 0 2px; font-size: 1rem; }
+    .boss-caption { margin: 0 0 5px; color: var(--muted); font-size: .7rem; }
+    .boss-face { float: right; margin: 0; font-family: ui-monospace, monospace; font-size: .9rem; letter-spacing: .08em; }
+    .hp-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-family: ui-monospace, monospace; font-size: .67rem; }
+    .hp-track { height: 10px; overflow: hidden; border: 1.5px solid var(--line); background: #e3dfd4; }
     .hp-fill { width: 100%; height: 100%; background: var(--accent); transition: width .2s ease; }
-    .boss-status { min-height: 1.3em; margin: 8px 0 0; color: var(--accent); font-size: .76rem; font-weight: 700; }
+    .boss-status { min-height: 1.3em; margin: 5px 0 0; color: var(--accent); font-size: .69rem; font-weight: 700; }
 
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .stat { border: 1px solid #c7c3b8; padding: 8px; }
-    .stat .label { display: block; color: var(--muted); font-size: .61rem; }
-    .stat strong { display: block; margin-top: 3px; font-family: ui-monospace, monospace; font-size: 1.13rem; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .stat { border: 1px solid #c7c3b8; padding: 5px; }
+    .stat .label { display: block; color: var(--muted); font-size: .56rem; }
+    .stat strong { display: block; margin-top: 2px; font-family: ui-monospace, monospace; font-size: .95rem; }
     .combo-value { color: var(--accent); }
     .next-layout { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    #next { width: 100px; height: 80px; border: 1px solid #c7c3b8; background: #f1eee5; }
-    #hold { width: 100px; height: 80px; border: 1px solid #c7c3b8; background: #f1eee5; }
-    .next-copy { color: var(--muted); font-size: .75rem; line-height: 1.6; }
+    #next { width: 140px; height: 58px; border: 1px solid #c7c3b8; background: #f1eee5; }
+    #hold { width: 70px; height: 58px; border: 1px solid #c7c3b8; background: #f1eee5; }
+    .next-copy { color: var(--muted); font-size: .68rem; line-height: 1.5; white-space: pre-line; }
     .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-    .action-button { min-height: 39px; font-size: .82rem; }
+    .action-button { min-height: 32px; font-size: .75rem; }
 
-    .rules { margin: 0; padding-left: 18px; font-size: .77rem; line-height: 1.65; }
+    .rules { margin: 0; padding-left: 18px; font-size: .7rem; line-height: 1.5; }
     .rules strong { color: var(--accent); }
     .formula { display: block; margin: 5px 0; padding: 5px 7px; border: 1px dashed #9b978b; font-family: ui-monospace, monospace; text-align: center; }
-    footer { margin-top: 17px; text-align: center; color: var(--muted); font-size: .7rem; }
+    footer { display: none; }
+
+    @media (min-width: 681px) {
+      .shell { width: min(100% - 24px, 980px); padding: 8px 0; }
+      header { margin-bottom: 8px; padding-bottom: 7px; }
+      .eyebrow { margin-bottom: 2px; font-size: .62rem; }
+      h1 { font-size: 1.55rem; }
+      .game-card { padding: 7px; }
+      .panel { padding: 8px; }
+      .sidebar { gap: 7px; }
+      .sidebar > .panel:nth-child(2) { grid-column: 1 / -1; }
+      .stats-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .stat { padding: 4px; }
+      .stat .label { font-size: .52rem; }
+      .rules br { display: none; }
+    }
+
+    @media (min-width: 681px) and (max-height: 760px) {
+      .board-wrap { width: min(100%, 200px); }
+      .touch-controls { margin-top: 5px; gap: 4px; }
+      .touch-controls button { min-height: 30px; }
+      .key-hint { font-size: .52rem; }
+      .panel-title { margin-bottom: 4px; padding-bottom: 3px; }
+      .sidebar { gap: 5px; }
+      .panel { padding: 6px; }
+      .boss-caption { margin-bottom: 3px; }
+      .boss-status { margin-top: 3px; }
+    }
 
     @media (max-width: 680px) {
       .shell { width: min(100% - 18px, 460px); padding-top: 14px; }
       .layout { grid-template-columns: 1fr; }
-      .sidebar { grid-template-columns: 1fr 1fr; }
+      .sidebar { grid-template-columns: 1fr 1fr; gap: 8px; }
       .sidebar .boss-panel, .sidebar .rules-panel, .sidebar .actions-panel { grid-column: 1 / -1; }
       .game-card { padding: 9px; }
-      .board-wrap { width: min(100%, 360px); }
-      .touch-controls { width: min(100%, 360px); }
+      .board-wrap { width: min(100%, 300px); }
+      .touch-controls { width: min(100%, 360px); max-width: 360px; }
       .panel { padding: 11px; }
+      .touch-controls button { min-height: 40px; }
+      .key-hint { font-size: .62rem; }
     }
 
     @media (max-width: 360px) {
@@ -211,14 +240,15 @@
           </div>
         </div>
         <div class="touch-controls" aria-label="觸控遊戲控制">
-          <button type="button" data-action="left" aria-label="向左">←</button>
-          <button type="button" data-action="rotate" aria-label="旋轉">↻</button>
-          <button type="button" data-action="right" aria-label="向右">→</button>
-          <button type="button" data-action="down" aria-label="向下">↓</button>
-          <button type="button" class="drop-button" data-action="drop" aria-label="直接落下">硬降</button>
-          <button type="button" class="hold-button" data-action="hold" aria-label="持有方塊">持有 C</button>
+          <button type="button" data-control="left" aria-label="向左">←</button>
+          <button type="button" data-control="rotateCCW" aria-label="逆時針旋轉">↶</button>
+          <button type="button" data-control="rotateCW" aria-label="順時針旋轉">↻</button>
+          <button type="button" data-control="right" aria-label="向右">→</button>
+          <button type="button" data-control="down" aria-label="軟降">↓ 軟降</button>
+          <button type="button" data-action="drop" class="drop-button" aria-label="直接落下">硬降</button>
+          <button type="button" data-action="hold" class="hold-button" aria-label="暫存方塊">暫存</button>
         </div>
-        <p class="key-hint">← → 移動　↑ 旋轉　↓ 加速　SPACE 硬降　C 持有　P 暫停　R 重玩</p>
+        <p class="key-hint">← → 移動　↑ / X 順轉　Z / Ctrl 逆轉　↓ 軟降　Space 硬降　C / Shift 暫存　P / Esc 暫停</p>
       </section>
 
       <aside class="sidebar">
@@ -248,16 +278,15 @@
         <section class="panel">
           <h2 class="panel-title">HOLD BLOCK / C</h2>
           <div class="next-layout">
-            <canvas id="hold" width="100" height="80" aria-label="持有方塊預覽"></canvas>
-            <span id="hold-copy" class="next-copy">每塊可持有<br>或交換一次</span>
+            <canvas id="hold" width="70" height="58" aria-label="持有方塊預覽"></canvas>
+            <span id="hold-copy" class="next-copy">每塊可暫存<br>或交換一次</span>
           </div>
         </section>
 
         <section class="panel">
           <h2 class="panel-title">NEXT BLOCK</h2>
           <div class="next-layout">
-            <canvas id="next" width="100" height="80" aria-label="下一個方塊預覽"></canvas>
-            <span class="next-copy">排好方塊，<br>瞄準 Boss！</span>
+            <canvas id="next" width="140" height="58" aria-label="接下來三個方塊預覽"></canvas>
           </div>
         </section>
 
@@ -277,7 +306,7 @@
         <section class="panel actions-panel">
           <div class="action-row">
             <button id="pause-button" class="action-button" type="button">暫停 P</button>
-            <button id="restart-button" class="action-button" type="button">重新開始 R</button>
+            <button id="restart-button" class="action-button" type="button">重新開始</button>
           </div>
         </section>
       </aside>
@@ -291,7 +320,7 @@
 
       const COLS = 10;
       const ROWS = 20;
-      const CELL = 30;
+      const CELL = 22;
       const SHAPES = {
         I: [[1, 1, 1, 1]],
         O: [[1, 1], [1, 1]],
@@ -306,13 +335,15 @@
         Z: "#d75d52", J: "#537bbd", L: "#e58a43", G: "#77766e"
       };
       const LEVELS = [
-        { name: "方塊史萊姆", title: "新手試煉", hp: 12, speed: 900, attackInterval: 28000, windup: 5000, attackRows: 1 },
-        { name: "像素騎士", title: "進階試煉", hp: 22, speed: 800, attackInterval: 25000, windup: 4500, attackRows: 1 },
-        { name: "虛空魔王", title: "最終試煉", hp: 35, speed: 700, attackInterval: 22000, windup: 4000, attackRows: 2 },
-        { name: "熔岩巨像", title: "菁英試煉", hp: 50, speed: 600, attackInterval: 19000, windup: 3500, attackRows: 2 },
-        { name: "混沌方塊神", title: "終極試煉", hp: 70, speed: 520, attackInterval: 16000, windup: 3000, attackRows: 3 }
+        { name: "方塊史萊姆", title: "新手試煉", hp: 12, speed: 800, attackInterval: 28000, windup: 5000, attackRows: 1 },
+        { name: "像素騎士", title: "進階試煉", hp: 22, speed: 700, attackInterval: 25000, windup: 4500, attackRows: 1 },
+        { name: "虛空魔王", title: "最終試煉", hp: 35, speed: 600, attackInterval: 22000, windup: 4000, attackRows: 2 },
+        { name: "熔岩巨像", title: "菁英試煉", hp: 50, speed: 500, attackInterval: 19000, windup: 3500, attackRows: 2 },
+        { name: "混沌方塊神", title: "終極試煉", hp: 70, speed: 400, attackInterval: 16000, windup: 3000, attackRows: 3 }
       ];
       const canvas = document.querySelector("#game");
+      canvas.width = COLS * CELL;
+      canvas.height = ROWS * CELL;
       const ctx = canvas.getContext("2d");
       const nextCanvas = document.querySelector("#next");
       const nextCtx = nextCanvas.getContext("2d");
@@ -324,7 +355,7 @@
 
       let bag = [];
       let piece;
-      let nextType;
+      let nextQueue = [];
       let heldType = null;
       let holdUsed = false;
       let levelIndex = 0;
@@ -335,6 +366,8 @@
       let lastDamage = null;
       let state = "playing";
       let dropElapsed = 0;
+      let lockElapsed = 0;
+      let lockResets = 0;
       let previousFrame = 0;
       let runElapsed = 0;
       let speedStep = 0;
@@ -343,6 +376,9 @@
       let incomingGarbage = 0;
       let attackWarning = false;
       let warningSeconds = -1;
+      const heldInputs = new Set();
+      let horizontalDirection = null;
+      let horizontalElapsed = 0;
 
       function refillBag() {
         bag = Object.keys(SHAPES);
@@ -362,9 +398,17 @@
         return { type, shape, x: Math.floor((COLS - shape[0].length) / 2), y: 0 };
       }
 
+      function fillNextQueue() {
+        while (nextQueue.length < 3) nextQueue.push(drawFromBag());
+      }
+
       function spawnPiece() {
-        piece = makePiece(nextType);
-        nextType = drawFromBag();
+        fillNextQueue();
+        piece = makePiece(nextQueue.shift());
+        fillNextQueue();
+        dropElapsed = 0;
+        lockElapsed = 0;
+        lockResets = 0;
         drawNext();
         if (collides(piece.shape, piece.x, piece.y)) finish("over");
       }
@@ -386,13 +430,33 @@
         return shape[0].map((_, col) => shape.map((row) => row[col]).reverse());
       }
 
-      function tryRotate() {
+      function resetLockAfterPlayerAction(wasGrounded) {
+        if (!wasGrounded) return;
+        if (collides(piece.shape, piece.x, piece.y + 1) && lockResets < 15) {
+          lockResets++;
+          lockElapsed = 0;
+        } else if (!collides(piece.shape, piece.x, piece.y + 1)) {
+          lockElapsed = 0;
+        }
+      }
+
+      function tryRotate(direction = 1) {
         if (state !== "playing") return;
-        const rotated = rotate(piece.shape);
-        for (const offset of [0, -1, 1, -2, 2]) {
-          if (!collides(rotated, piece.x + offset, piece.y)) {
+        if (piece.type === "O") return;
+        let rotated = piece.shape.map((row) => row.slice());
+        const turns = direction === 1 ? 1 : 3;
+        for (let turn = 0; turn < turns; turn++) rotated = rotate(rotated);
+        const wasGrounded = collides(piece.shape, piece.x, piece.y + 1);
+        const offsets = [
+          [0, 0], [-1, 0], [1, 0], [-2, 0], [2, 0],
+          [0, -1], [-1, -1], [1, -1], [-2, -1], [2, -1]
+        ];
+        for (const [dx, dy] of offsets) {
+          if (!collides(rotated, piece.x + dx, piece.y + dy)) {
             piece.shape = rotated;
-            piece.x += offset;
+            piece.x += dx;
+            piece.y += dy;
+            resetLockAfterPlayerAction(wasGrounded);
             draw();
             return;
           }
@@ -402,8 +466,11 @@
       function move(dx, dy) {
         if (state !== "playing") return false;
         if (!collides(piece.shape, piece.x + dx, piece.y + dy)) {
+          const wasGrounded = collides(piece.shape, piece.x, piece.y + 1);
           piece.x += dx;
           piece.y += dy;
+          if (dx !== 0) resetLockAfterPlayerAction(wasGrounded);
+          if (dy !== 0) lockElapsed = 0;
           draw();
           return true;
         }
@@ -411,7 +478,7 @@
       }
 
       function dropOne() {
-        if (!move(0, 1)) lockPiece();
+        move(0, 1);
       }
 
       function hardDrop() {
@@ -435,6 +502,9 @@
           const replacement = heldType;
           heldType = currentType;
           piece = makePiece(replacement);
+          dropElapsed = 0;
+          lockElapsed = 0;
+          lockResets = 0;
           if (collides(piece.shape, piece.x, piece.y)) finish("over");
         }
         holdUsed = true;
@@ -561,8 +631,13 @@
         return Math.max(180, LEVELS[levelIndex].speed - accelerationSteps * 35);
       }
 
+      function softDropInterval() {
+        return Math.max(30, currentDropInterval() / 20);
+      }
+
       function finish(result) {
         state = result;
+        clearHeldInputs();
         const overlay = $("#overlay");
         $("#overlay-title").textContent = result === "won" ? "冒險通關！" : "方塊堆滿了";
         $("#overlay-copy").textContent = result === "won"
@@ -578,15 +653,19 @@
 
       function togglePause() {
         if (state === "playing") {
+          clearHeldInputs();
           state = "paused";
           $("#overlay-title").textContent = "暫停中";
-          $("#overlay-copy").textContent = "按 P 或「繼續遊戲」回到冒險";
+          $("#overlay-copy").textContent = "按 Esc、P、F1 或「繼續遊戲」回到冒險";
           $("#overlay").hidden = false;
           $("#game-status").textContent = "暫停中";
           $("#game-status").className = "live-indicator paused";
           $("#pause-button").textContent = "繼續遊戲 P";
         } else if (state === "paused") {
           state = "playing";
+          dropElapsed = 0;
+          lockElapsed = 0;
+          previousFrame = 0;
           $("#overlay").hidden = true;
           $("#game-status").textContent = "冒險進行中";
           $("#game-status").className = "live-indicator";
@@ -595,6 +674,7 @@
       }
 
       function resetGame() {
+        clearHeldInputs();
         for (const row of board) row.fill(null);
         bag = [];
         levelIndex = 0;
@@ -607,6 +687,8 @@
         holdUsed = false;
         state = "playing";
         dropElapsed = 0;
+        lockElapsed = 0;
+        lockResets = 0;
         runElapsed = 0;
         speedStep = 0;
         attackElapsed = 0;
@@ -620,7 +702,8 @@
         $("#game-status").className = "live-indicator";
         $("#pause-button").textContent = "暫停 P";
         $("#boss-status").textContent = "消除方塊列來攻擊！";
-        nextType = drawFromBag();
+        nextQueue = [];
+        fillNextQueue();
         drawHold();
         spawnPiece();
         updateUI();
@@ -684,25 +767,36 @@
         nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
         nextCtx.fillStyle = "#f1eee5";
         nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
-        const shape = SHAPES[nextType];
-        const size = 18;
-        const offsetX = (nextCanvas.width - shape[0].length * size) / 2;
-        const offsetY = (nextCanvas.height - shape.length * size) / 2;
-        nextCtx.save();
-        nextCtx.translate(offsetX, offsetY);
-        for (let row = 0; row < shape.length; row++) {
-          for (let col = 0; col < shape[row].length; col++) {
-            if (shape[row][col]) drawCell(nextCtx, col, row, nextType, size);
+        const slotWidth = nextCanvas.width / 3;
+        for (let index = 0; index < 3; index++) {
+          const type = nextQueue[index];
+          if (index > 0) {
+            nextCtx.strokeStyle = "#c7c3b8";
+            nextCtx.beginPath();
+            nextCtx.moveTo(index * slotWidth, 5);
+            nextCtx.lineTo(index * slotWidth, nextCanvas.height - 5);
+            nextCtx.stroke();
           }
+          const shape = SHAPES[type];
+          const size = 10;
+          const offsetX = index * slotWidth + (slotWidth - shape[0].length * size) / 2;
+          const offsetY = (nextCanvas.height - shape.length * size) / 2;
+          nextCtx.save();
+          nextCtx.translate(offsetX, offsetY);
+          for (let row = 0; row < shape.length; row++) {
+            for (let col = 0; col < shape[row].length; col++) {
+              if (shape[row][col]) drawCell(nextCtx, col, row, type, size);
+            }
+          }
+          nextCtx.restore();
         }
-        nextCtx.restore();
       }
 
       function drawHold() {
         holdCtx.clearRect(0, 0, holdCanvas.width, holdCanvas.height);
         holdCtx.fillStyle = "#f1eee5";
         holdCtx.fillRect(0, 0, holdCanvas.width, holdCanvas.height);
-        $("#hold-copy").textContent = holdUsed ? "本塊已使用\n等下塊落鎖" : "每塊可持有\n或交換一次";
+        $("#hold-copy").textContent = holdUsed ? "本塊已使用\n等下塊落鎖" : "每塊可暫存\n或交換一次";
         if (!heldType) {
           holdCtx.fillStyle = "#76766e";
           holdCtx.font = "11px ui-monospace, monospace";
@@ -711,7 +805,7 @@
           return;
         }
         const shape = SHAPES[heldType];
-        const size = 18;
+        const size = 14;
         const offsetX = (holdCanvas.width - shape[0].length * size) / 2;
         const offsetY = (holdCanvas.height - shape.length * size) / 2;
         holdCtx.save();
@@ -742,32 +836,136 @@
         drawHold();
       }
 
-      function handleAction(action) {
-        if (action === "left") move(-1, 0);
-        else if (action === "right") move(1, 0);
-        else if (action === "down") {
-          if (move(0, 1)) score++;
-          updateUI();
-        } else if (action === "rotate") tryRotate();
-        else if (action === "drop") hardDrop();
-        else if (action === "hold") holdPiece();
+      function clearHeldInputs() {
+        heldInputs.clear();
+        horizontalDirection = null;
+        horizontalElapsed = 0;
+      }
+
+      function pressControl(control) {
+        if (state !== "playing") return;
+        if (control === "left" || control === "right" || control === "down") {
+          if (heldInputs.has(control)) return;
+          heldInputs.add(control);
+          if (control === "left" || control === "right") {
+            horizontalDirection = control;
+            horizontalElapsed = 0;
+            move(control === "left" ? -1 : 1, 0);
+          }
+          return;
+        }
+        if (control === "rotateCW") tryRotate(1);
+        else if (control === "rotateCCW") tryRotate(-1);
+        else if (control === "drop") hardDrop();
+        else if (control === "hold") holdPiece();
+      }
+
+      function releaseControl(control) {
+        if (!heldInputs.has(control)) return;
+        heldInputs.delete(control);
+        if (control === "left" || control === "right") {
+          const other = control === "left" ? "right" : "left";
+          horizontalDirection = heldInputs.has(other) ? other : null;
+          horizontalElapsed = 0;
+        }
+      }
+
+      function processHorizontalMovement(delta) {
+        if (!horizontalDirection || !heldInputs.has(horizontalDirection)) return;
+        horizontalElapsed += delta;
+        if (horizontalElapsed < 160) return;
+        horizontalElapsed -= 160;
+        move(horizontalDirection === "left" ? -1 : 1, 0);
+        while (horizontalElapsed >= 40) {
+          horizontalElapsed -= 40;
+          move(horizontalDirection === "left" ? -1 : 1, 0);
+        }
+      }
+
+      function controlForCode(code) {
+        if (code === "ArrowLeft") return "left";
+        if (code === "ArrowRight") return "right";
+        if (code === "ArrowDown") return "down";
+        return null;
       }
 
       document.addEventListener("keydown", (event) => {
-        const key = event.key;
-        if (["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp", " "].includes(key)) event.preventDefault();
-        if (key.toLowerCase() === "r") resetGame();
-        else if (key.toLowerCase() === "p") togglePause();
-        else if (key.toLowerCase() === "c") handleAction("hold");
-        else if (key === "ArrowLeft") handleAction("left");
-        else if (key === "ArrowRight") handleAction("right");
-        else if (key === "ArrowDown") handleAction("down");
-        else if (key === "ArrowUp") handleAction("rotate");
-        else if (key === " ") handleAction("drop");
+        if (event.repeat) return;
+        const control = controlForCode(event.code);
+        if (control) {
+          event.preventDefault();
+          pressControl(control);
+          return;
+        }
+
+        if (["ArrowUp", "Space", "Escape", "F1", "Enter", "ShiftLeft", "ShiftRight", "ControlLeft", "ControlRight"].includes(event.code)) {
+          event.preventDefault();
+        }
+        if (event.code === "Escape" || event.code === "KeyP" || event.code === "F1") {
+          togglePause();
+        } else if (event.code === "Enter") {
+          if (state === "paused") togglePause();
+          else if (state === "over" || state === "won") resetGame();
+        } else if (event.code === "Space") {
+          if (state === "paused") togglePause();
+          else if (state === "over" || state === "won") resetGame();
+          else pressControl("drop");
+        } else if (event.code === "ArrowUp" || event.code === "KeyX") {
+          pressControl("rotateCW");
+        } else if (event.code === "KeyZ" || event.code === "ControlLeft" || event.code === "ControlRight") {
+          pressControl("rotateCCW");
+        } else if (event.code === "KeyC" || event.code === "ShiftLeft" || event.code === "ShiftRight") {
+          pressControl("hold");
+        }
       });
 
-      document.querySelectorAll("[data-action]").forEach((button) => {
-        button.addEventListener("click", () => handleAction(button.dataset.action));
+      document.addEventListener("keyup", (event) => {
+        const control = controlForCode(event.code);
+        if (control) releaseControl(control);
+      });
+      const activePointers = new Map();
+      window.addEventListener("blur", () => {
+        clearHeldInputs();
+        activePointers.clear();
+      });
+      document.querySelectorAll("[data-control], [data-action]").forEach((button) => {
+        button.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          const control = button.dataset.control;
+          const action = button.dataset.action;
+          if (control) {
+            activePointers.set(event.pointerId, control);
+            pressControl(control);
+          } else if (action) {
+            activePointers.set(event.pointerId, null);
+            pressControl(action);
+          }
+        });
+        button.addEventListener("pointerleave", (event) => {
+          const control = activePointers.get(event.pointerId);
+          if (control) releaseControl(control);
+          activePointers.delete(event.pointerId);
+        });
+      });
+      document.addEventListener("pointerup", (event) => {
+        const control = activePointers.get(event.pointerId);
+        if (control) releaseControl(control);
+        activePointers.delete(event.pointerId);
+      });
+      document.addEventListener("pointercancel", (event) => {
+        const control = activePointers.get(event.pointerId);
+        if (control) releaseControl(control);
+        activePointers.delete(event.pointerId);
+      });
+      document.querySelectorAll("[data-control], [data-action]").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          if (event.detail !== 0) return;
+          const control = button.dataset.control || button.dataset.action;
+          pressControl(control);
+          if (control === "left" || control === "right" || control === "down") {
+            releaseControl(control);
+          }
+        });
       });
       $("#pause-button").addEventListener("click", togglePause);
       $("#restart-button").addEventListener("click", resetGame);
@@ -776,7 +974,6 @@
         if (state === "playing") {
           const delta = previousFrame ? Math.min(timestamp - previousFrame, 100) : 0;
           runElapsed += delta;
-          dropElapsed += delta;
           const nextSpeedStep = Math.floor(runElapsed / 12000);
           if (nextSpeedStep !== speedStep) {
             speedStep = nextSpeedStep;
@@ -790,9 +987,25 @@
             attackElapsed += delta;
             if (attackElapsed >= LEVELS[levelIndex].attackInterval) startBossWarning();
           }
-          if (dropElapsed >= currentDropInterval()) {
-            dropElapsed = 0;
-            dropOne();
+
+          const activePiece = piece;
+          processHorizontalMovement(delta);
+          if (state === "playing" && piece === activePiece) {
+            if (collides(piece.shape, piece.x, piece.y + 1)) {
+              lockElapsed += delta;
+              if (lockElapsed >= 500) lockPiece();
+            } else {
+              lockElapsed = 0;
+              dropElapsed += delta;
+              const interval = heldInputs.has("down") ? softDropInterval() : currentDropInterval();
+              if (dropElapsed >= interval) {
+                dropElapsed = 0;
+                if (move(0, 1) && heldInputs.has("down")) {
+                  score++;
+                  updateUI();
+                }
+              }
+            }
           }
         }
         previousFrame = timestamp;

@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1e8">
+  <title>方塊勇者：Boss Rush</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20211f;
+      --paper: #f4f1e8;
+      --panel: #fffdf7;
+      --muted: #76766e;
+      --line: #282923;
+      --accent: #db5a38;
+      --green: #577a57;
+      font-family: "Trebuchet MS", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(#d6d1c3 0.7px, transparent 0.7px);
+      background-size: 12px 12px;
+    }
+
+    button { font: inherit; }
+
+    .shell {
+      width: min(100% - 28px, 1000px);
+      margin: 0 auto;
+      padding: 22px 0 34px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    .eyebrow, .label, .key-hint {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow { margin: 0 0 4px; color: var(--muted); font-size: .72rem; }
+    h1 { margin: 0; font-size: clamp(1.4rem, 4vw, 2.15rem); line-height: 1.1; }
+    .header-stamp { border: 1px solid var(--line); padding: 6px 9px; font-size: .72rem; white-space: nowrap; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(250px, 1fr) minmax(235px, 300px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .game-card, .panel {
+      background: var(--panel);
+      border: 2px solid var(--line);
+      box-shadow: 4px 4px 0 var(--line);
+    }
+
+    .game-card { padding: 12px; }
+    .game-topline { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 9px; font-size: .75rem; }
+    .live-indicator { font-family: ui-monospace, monospace; }
+    .live-indicator::before { content: "●"; color: var(--green); margin-right: 6px; }
+    .live-indicator.paused::before, .live-indicator.ended::before { color: var(--accent); }
+
+    .board-wrap {
+      position: relative;
+      width: min(100%, 420px);
+      margin: 0 auto;
+      border: 2px solid var(--line);
+      background: #f1eee5;
+    }
+
+    .board-wrap.warning { border-color: var(--accent); }
+    .board-wrap.warning #game { animation: warning-flash .65s steps(2, start) infinite; }
+    @keyframes warning-flash { to { opacity: .72; } }
+
+    #game { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      gap: 7px;
+      padding: 20px;
+      text-align: center;
+      color: var(--ink);
+      background: rgb(244 241 232 / 91%);
+    }
+
+    .overlay[hidden] { display: none; }
+    .overlay strong { font-size: clamp(1.5rem, 6vw, 2rem); }
+    .overlay span { font-size: .88rem; }
+
+    .touch-controls {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 7px;
+      max-width: 420px;
+      margin: 11px auto 0;
+    }
+
+    .touch-controls button, .action-button {
+      min-height: 43px;
+      border: 1.5px solid var(--line);
+      background: #fffdf7;
+      color: var(--ink);
+      box-shadow: 2px 2px 0 var(--line);
+      cursor: pointer;
+      touch-action: manipulation;
+      font-weight: 700;
+    }
+
+    .touch-controls button:active, .action-button:active { transform: translate(2px, 2px); box-shadow: none; }
+    button:focus-visible { outline: 3px solid #3975a5; outline-offset: 2px; }
+    .touch-controls button { min-width: 0; padding: 2px; font-size: 1.15rem; }
+    .touch-controls .drop-button { font-size: .72rem; }
+    .touch-controls .hold-button { font-size: .63rem; }
+
+    .key-hint { margin: 10px 0 0; text-align: center; color: var(--muted); font-size: .63rem; line-height: 1.7; }
+
+    .sidebar { display: grid; gap: 12px; }
+    .panel { padding: 13px; }
+    .panel-title {
+      margin: 0 0 10px;
+      padding-bottom: 7px;
+      border-bottom: 1px solid #b9b5a9;
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: .76rem;
+      letter-spacing: .08em;
+    }
+
+    .boss-name { margin: 0 0 3px; font-size: 1.16rem; }
+    .boss-caption { margin: 0 0 11px; color: var(--muted); font-size: .78rem; }
+    .boss-face { margin: 0 0 10px; font-family: ui-monospace, monospace; font-size: 1.1rem; letter-spacing: .12em; }
+    .hp-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-family: ui-monospace, monospace; font-size: .73rem; }
+    .hp-track { height: 13px; overflow: hidden; border: 1.5px solid var(--line); background: #e3dfd4; }
+    .hp-fill { width: 100%; height: 100%; background: var(--accent); transition: width .2s ease; }
+    .boss-status { min-height: 1.3em; margin: 8px 0 0; color: var(--accent); font-size: .76rem; font-weight: 700; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat { border: 1px solid #c7c3b8; padding: 8px; }
+    .stat .label { display: block; color: var(--muted); font-size: .61rem; }
+    .stat strong { display: block; margin-top: 3px; font-family: ui-monospace, monospace; font-size: 1.13rem; }
+    .combo-value { color: var(--accent); }
+    .next-layout { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    #next { width: 100px; height: 80px; border: 1px solid #c7c3b8; background: #f1eee5; }
+    #hold { width: 100px; height: 80px; border: 1px solid #c7c3b8; background: #f1eee5; }
+    .next-copy { color: var(--muted); font-size: .75rem; line-height: 1.6; }
+    .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .action-button { min-height: 39px; font-size: .82rem; }
+
+    .rules { margin: 0; padding-left: 18px; font-size: .77rem; line-height: 1.65; }
+    .rules strong { color: var(--accent); }
+    .formula { display: block; margin: 5px 0; padding: 5px 7px; border: 1px dashed #9b978b; font-family: ui-monospace, monospace; text-align: center; }
+    footer { margin-top: 17px; text-align: center; color: var(--muted); font-size: .7rem; }
+
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 18px, 460px); padding-top: 14px; }
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { grid-template-columns: 1fr 1fr; }
+      .sidebar .boss-panel, .sidebar .rules-panel, .sidebar .actions-panel { grid-column: 1 / -1; }
+      .game-card { padding: 9px; }
+      .board-wrap { width: min(100%, 360px); }
+      .touch-controls { width: min(100%, 360px); }
+      .panel { padding: 11px; }
+    }
+
+    @media (max-width: 360px) {
+      .sidebar { grid-template-columns: 1fr; }
+      .sidebar .boss-panel, .sidebar .rules-panel, .sidebar .actions-panel { grid-column: auto; }
+      .header-stamp { font-size: .62rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">A tiny block-battling adventure</p>
+        <h1>方塊勇者：Boss Rush</h1>
+      </div>
+      <span class="header-stamp">單人冒險 · 5 關</span>
+    </header>
+
+    <div class="layout">
+      <section class="game-card" aria-label="俄羅斯方塊遊戲區">
+        <div class="game-topline">
+          <span>FIELD <b>10 × 20</b></span>
+          <span id="game-status" class="live-indicator" aria-live="polite">冒險進行中</span>
+        </div>
+        <div class="board-wrap">
+          <canvas id="game" width="300" height="600" aria-label="方塊遊戲棋盤"></canvas>
+          <div id="overlay" class="overlay" hidden>
+            <strong id="overlay-title"></strong>
+            <span id="overlay-copy"></span>
+          </div>
+        </div>
+        <div class="touch-controls" aria-label="觸控遊戲控制">
+          <button type="button" data-action="left" aria-label="向左">←</button>
+          <button type="button" data-action="rotate" aria-label="旋轉">↻</button>
+          <button type="button" data-action="right" aria-label="向右">→</button>
+          <button type="button" data-action="down" aria-label="向下">↓</button>
+          <button type="button" class="drop-button" data-action="drop" aria-label="直接落下">硬降</button>
+          <button type="button" class="hold-button" data-action="hold" aria-label="持有方塊">持有 C</button>
+        </div>
+        <p class="key-hint">← → 移動　↑ 旋轉　↓ 加速　SPACE 硬降　C 持有　P 暫停　R 重玩</p>
+      </section>
+
+      <aside class="sidebar">
+        <section class="panel boss-panel">
+          <h2 class="panel-title">CURRENT BOSS / <span id="level-label">01</span></h2>
+          <p class="boss-face" aria-hidden="true">(•̀ᴗ•́)و</p>
+          <h3 id="boss-name" class="boss-name">方塊史萊姆</h3>
+          <p id="boss-caption" class="boss-caption">新手試煉 · 慢速下落</p>
+          <div class="hp-row"><span>BOSS HP</span><span id="boss-hp-text">12 / 12</span></div>
+          <div class="hp-track" role="progressbar" aria-label="Boss 血量" aria-valuemin="0" aria-valuemax="12" aria-valuenow="12">
+            <div id="boss-hp-fill" class="hp-fill"></div>
+          </div>
+          <p id="boss-status" class="boss-status" aria-live="polite">消除方塊列來攻擊！</p>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">RUN DATA</h2>
+          <div class="stats-grid">
+            <div class="stat"><span class="label">SCORE</span><strong id="score">00000</strong></div>
+            <div class="stat"><span class="label">CLEARED</span><strong id="lines">0</strong></div>
+            <div class="stat"><span class="label">COMBO</span><strong id="combo" class="combo-value">×0</strong></div>
+            <div class="stat"><span class="label">LAST HIT</span><strong id="damage">—</strong></div>
+            <div class="stat"><span class="label">FALL SPEED</span><strong id="speed">1.0×</strong></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">HOLD BLOCK / C</h2>
+          <div class="next-layout">
+            <canvas id="hold" width="100" height="80" aria-label="持有方塊預覽"></canvas>
+            <span id="hold-copy" class="next-copy">每塊可持有<br>或交換一次</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">NEXT BLOCK</h2>
+          <div class="next-layout">
+            <canvas id="next" width="100" height="80" aria-label="下一個方塊預覽"></canvas>
+            <span class="next-copy">排好方塊，<br>瞄準 Boss！</span>
+          </div>
+        </section>
+
+        <section class="panel rules-panel">
+          <h2 class="panel-title">攻擊規則</h2>
+          <ul class="rules">
+            <li>一次消除 N 行，基礎傷害為：</li>
+          </ul>
+          <span class="formula">N × (N + 1) ÷ 2</span>
+          <ul class="rules">
+            <li>連續消除的傷害再乘上 <strong>Combo</strong>。</li>
+            <li>落下一塊卻沒消行，Combo 歸零。</li>
+            <li>Boss 攻擊前會預告垃圾列；倒數期間每消一行可抵銷一列。</li>
+          </ul>
+        </section>
+
+        <section class="panel actions-panel">
+          <div class="action-row">
+            <button id="pause-button" class="action-button" type="button">暫停 P</button>
+            <button id="restart-button" class="action-button" type="button">重新開始 R</button>
+          </div>
+        </section>
+      </aside>
+    </div>
+    <footer>用方塊闖過五場試煉。每一行，都是一次反擊。</footer>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const COLS = 10;
+      const ROWS = 20;
+      const CELL = 30;
+      const SHAPES = {
+        I: [[1, 1, 1, 1]],
+        O: [[1, 1], [1, 1]],
+        T: [[0, 1, 0], [1, 1, 1]],
+        S: [[0, 1, 1], [1, 1, 0]],
+        Z: [[1, 1, 0], [0, 1, 1]],
+        J: [[1, 0, 0], [1, 1, 1]],
+        L: [[0, 0, 1], [1, 1, 1]]
+      };
+      const COLORS = {
+        I: "#39aeb0", O: "#e5b83f", T: "#9b71bd", S: "#72a75d",
+        Z: "#d75d52", J: "#537bbd", L: "#e58a43", G: "#77766e"
+      };
+      const LEVELS = [
+        { name: "方塊史萊姆", title: "新手試煉", hp: 12, speed: 900, attackInterval: 28000, windup: 5000, attackRows: 1 },
+        { name: "像素騎士", title: "進階試煉", hp: 22, speed: 800, attackInterval: 25000, windup: 4500, attackRows: 1 },
+        { name: "虛空魔王", title: "最終試煉", hp: 35, speed: 700, attackInterval: 22000, windup: 4000, attackRows: 2 },
+        { name: "熔岩巨像", title: "菁英試煉", hp: 50, speed: 600, attackInterval: 19000, windup: 3500, attackRows: 2 },
+        { name: "混沌方塊神", title: "終極試煉", hp: 70, speed: 520, attackInterval: 16000, windup: 3000, attackRows: 3 }
+      ];
+      const canvas = document.querySelector("#game");
+      const ctx = canvas.getContext("2d");
+      const nextCanvas = document.querySelector("#next");
+      const nextCtx = nextCanvas.getContext("2d");
+      const holdCanvas = document.querySelector("#hold");
+      const holdCtx = holdCanvas.getContext("2d");
+      const board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+      const $ = (selector) => document.querySelector(selector);
+      const boardWrap = document.querySelector(".board-wrap");
+
+      let bag = [];
+      let piece;
+      let nextType;
+      let heldType = null;
+      let holdUsed = false;
+      let levelIndex = 0;
+      let bossHp = LEVELS[0].hp;
+      let score = 0;
+      let clearedLines = 0;
+      let combo = 0;
+      let lastDamage = null;
+      let state = "playing";
+      let dropElapsed = 0;
+      let previousFrame = 0;
+      let runElapsed = 0;
+      let speedStep = 0;
+      let attackElapsed = 0;
+      let attackCountdown = 0;
+      let incomingGarbage = 0;
+      let attackWarning = false;
+      let warningSeconds = -1;
+
+      function refillBag() {
+        bag = Object.keys(SHAPES);
+        for (let i = bag.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [bag[i], bag[j]] = [bag[j], bag[i]];
+        }
+      }
+
+      function drawFromBag() {
+        if (bag.length === 0) refillBag();
+        return bag.pop();
+      }
+
+      function makePiece(type) {
+        const shape = SHAPES[type].map((row) => row.slice());
+        return { type, shape, x: Math.floor((COLS - shape[0].length) / 2), y: 0 };
+      }
+
+      function spawnPiece() {
+        piece = makePiece(nextType);
+        nextType = drawFromBag();
+        drawNext();
+        if (collides(piece.shape, piece.x, piece.y)) finish("over");
+      }
+
+      function collides(shape, x, y) {
+        for (let row = 0; row < shape.length; row++) {
+          for (let col = 0; col < shape[row].length; col++) {
+            if (!shape[row][col]) continue;
+            const boardX = x + col;
+            const boardY = y + row;
+            if (boardX < 0 || boardX >= COLS || boardY >= ROWS) return true;
+            if (boardY >= 0 && board[boardY][boardX]) return true;
+          }
+        }
+        return false;
+      }
+
+      function rotate(shape) {
+        return shape[0].map((_, col) => shape.map((row) => row[col]).reverse());
+      }
+
+      function tryRotate() {
+        if (state !== "playing") return;
+        const rotated = rotate(piece.shape);
+        for (const offset of [0, -1, 1, -2, 2]) {
+          if (!collides(rotated, piece.x + offset, piece.y)) {
+            piece.shape = rotated;
+            piece.x += offset;
+            draw();
+            return;
+          }
+        }
+      }
+
+      function move(dx, dy) {
+        if (state !== "playing") return false;
+        if (!collides(piece.shape, piece.x + dx, piece.y + dy)) {
+          piece.x += dx;
+          piece.y += dy;
+          draw();
+          return true;
+        }
+        return false;
+      }
+
+      function dropOne() {
+        if (!move(0, 1)) lockPiece();
+      }
+
+      function hardDrop() {
+        if (state !== "playing") return;
+        let distance = 0;
+        while (!collides(piece.shape, piece.x, piece.y + 1)) {
+          piece.y++;
+          distance++;
+        }
+        score += distance * 2;
+        lockPiece();
+      }
+
+      function holdPiece() {
+        if (state !== "playing" || holdUsed) return;
+        const currentType = piece.type;
+        if (heldType === null) {
+          heldType = currentType;
+          spawnPiece();
+        } else {
+          const replacement = heldType;
+          heldType = currentType;
+          piece = makePiece(replacement);
+          if (collides(piece.shape, piece.x, piece.y)) finish("over");
+        }
+        holdUsed = true;
+        drawHold();
+        draw();
+      }
+
+      function lockPiece() {
+        for (let row = 0; row < piece.shape.length; row++) {
+          for (let col = 0; col < piece.shape[row].length; col++) {
+            if (!piece.shape[row][col]) continue;
+            const y = piece.y + row;
+            if (y < 0) {
+              finish("over");
+              return;
+            }
+            board[y][piece.x + col] = piece.type;
+          }
+        }
+
+        const remaining = board.filter((row) => row.some((cell) => !cell));
+        const cleared = ROWS - remaining.length;
+        while (remaining.length < ROWS) remaining.unshift(Array(COLS).fill(null));
+        board.splice(0, ROWS, ...remaining);
+
+        if (cleared > 0) {
+          clearedLines += cleared;
+          score += [0, 100, 300, 500, 800][cleared] * (levelIndex + 1);
+          combo++;
+          const baseDamage = cleared * (cleared + 1) / 2;
+          lastDamage = baseDamage * combo;
+          bossHp = Math.max(0, bossHp - lastDamage);
+          $("#boss-status").textContent = `消除 ${cleared} 行！造成 ${lastDamage} 點傷害`;
+          if (attackWarning && incomingGarbage > 0) {
+            const blocked = Math.min(cleared, incomingGarbage);
+            incomingGarbage -= blocked;
+            if (incomingGarbage === 0) {
+              attackWarning = false;
+              attackCountdown = 0;
+              attackElapsed = 0;
+              $("#boss-status").textContent += "；成功抵銷 Boss 攻擊！";
+            } else {
+              $("#boss-status").textContent += `；抵銷 ${blocked} 列垃圾攻擊`;
+            }
+          }
+          if (bossHp === 0) {
+            if (levelIndex === LEVELS.length - 1) {
+              updateUI();
+              finish("won");
+              return;
+            }
+            levelIndex++;
+            bossHp = LEVELS[levelIndex].hp;
+            combo = 0;
+            attackElapsed = 0;
+            attackCountdown = 0;
+            incomingGarbage = 0;
+            attackWarning = false;
+            $("#boss-status").textContent = `Boss 擊敗！${LEVELS[levelIndex].name} 登場`;
+          }
+        } else {
+          combo = 0;
+          lastDamage = null;
+          $("#boss-status").textContent = "沒有消行，Combo 歸零";
+        }
+
+        holdUsed = false;
+        updateUI();
+        spawnPiece();
+        draw();
+      }
+
+      function startBossWarning() {
+        const level = LEVELS[levelIndex];
+        attackWarning = true;
+        attackCountdown = level.windup;
+        incomingGarbage = level.attackRows;
+        warningSeconds = -1;
+        renderBossWarning();
+      }
+
+      function renderBossWarning() {
+        if (!attackWarning) return;
+        const seconds = Math.max(1, Math.ceil(attackCountdown / 1000));
+        boardWrap.classList.add("warning");
+        if (seconds !== warningSeconds) {
+          warningSeconds = seconds;
+          $("#boss-status").textContent =
+            `⚠ Boss 攻擊倒數 ${seconds} 秒：將升起 ${incomingGarbage} 列垃圾方塊！`;
+        }
+      }
+
+      function resolveBossAttack() {
+        const rowsToAdd = incomingGarbage;
+        attackWarning = false;
+        attackCountdown = 0;
+        incomingGarbage = 0;
+        attackElapsed = 0;
+        warningSeconds = -1;
+        boardWrap.classList.remove("warning");
+        if (rowsToAdd === 0) return;
+
+        for (let row = 0; row < rowsToAdd; row++) {
+          if (board[0].some((cell) => cell !== null)) {
+            finish("over");
+            return;
+          }
+          board.shift();
+          const garbage = Array(COLS).fill("G");
+          garbage[Math.floor(Math.random() * COLS)] = null;
+          board.push(garbage);
+          piece.y--;
+        }
+        if (collides(piece.shape, piece.x, piece.y)) {
+          finish("over");
+          return;
+        }
+        $("#boss-status").textContent = `Boss 發動攻擊！棋盤升起 ${rowsToAdd} 列垃圾方塊`;
+        draw();
+      }
+
+      function currentDropInterval() {
+        const accelerationSteps = Math.floor(runElapsed / 12000);
+        return Math.max(180, LEVELS[levelIndex].speed - accelerationSteps * 35);
+      }
+
+      function finish(result) {
+        state = result;
+        const overlay = $("#overlay");
+        $("#overlay-title").textContent = result === "won" ? "冒險通關！" : "方塊堆滿了";
+        $("#overlay-copy").textContent = result === "won"
+          ? `五位 Boss 都被擊敗了！最終分數：${score}`
+          : `再試一次，挑戰 Boss！目前分數：${score}`;
+        overlay.hidden = false;
+        $("#game-status").textContent = result === "won" ? "冒險完成" : "挑戰失敗";
+        $("#game-status").className = "live-indicator ended";
+        $("#pause-button").textContent = "暫停 P";
+        updateUI();
+        draw();
+      }
+
+      function togglePause() {
+        if (state === "playing") {
+          state = "paused";
+          $("#overlay-title").textContent = "暫停中";
+          $("#overlay-copy").textContent = "按 P 或「繼續遊戲」回到冒險";
+          $("#overlay").hidden = false;
+          $("#game-status").textContent = "暫停中";
+          $("#game-status").className = "live-indicator paused";
+          $("#pause-button").textContent = "繼續遊戲 P";
+        } else if (state === "paused") {
+          state = "playing";
+          $("#overlay").hidden = true;
+          $("#game-status").textContent = "冒險進行中";
+          $("#game-status").className = "live-indicator";
+          $("#pause-button").textContent = "暫停 P";
+        }
+      }
+
+      function resetGame() {
+        for (const row of board) row.fill(null);
+        bag = [];
+        levelIndex = 0;
+        bossHp = LEVELS[0].hp;
+        score = 0;
+        clearedLines = 0;
+        combo = 0;
+        lastDamage = null;
+        heldType = null;
+        holdUsed = false;
+        state = "playing";
+        dropElapsed = 0;
+        runElapsed = 0;
+        speedStep = 0;
+        attackElapsed = 0;
+        attackCountdown = 0;
+        incomingGarbage = 0;
+        attackWarning = false;
+        warningSeconds = -1;
+        boardWrap.classList.remove("warning");
+        $("#overlay").hidden = true;
+        $("#game-status").textContent = "冒險進行中";
+        $("#game-status").className = "live-indicator";
+        $("#pause-button").textContent = "暫停 P";
+        $("#boss-status").textContent = "消除方塊列來攻擊！";
+        nextType = drawFromBag();
+        drawHold();
+        spawnPiece();
+        updateUI();
+        draw();
+      }
+
+      function drawCell(context, x, y, type, size) {
+        context.fillStyle = COLORS[type];
+        context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
+        context.strokeStyle = "#252621";
+        context.lineWidth = Math.max(1, size * 0.055);
+        context.strokeRect(x * size + 1, y * size + 1, size - 2, size - 2);
+        context.fillStyle = "rgb(255 255 255 / 32%)";
+        context.fillRect(x * size + 3, y * size + 3, size - 6, Math.max(2, size * 0.11));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#f1eee5";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#d8d3c7";
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= COLS; x++) {
+          ctx.beginPath();
+          ctx.moveTo(x * CELL + 0.5, 0);
+          ctx.lineTo(x * CELL + 0.5, canvas.height);
+          ctx.stroke();
+        }
+        for (let y = 0; y <= ROWS; y++) {
+          ctx.beginPath();
+          ctx.moveTo(0, y * CELL + 0.5);
+          ctx.lineTo(canvas.width, y * CELL + 0.5);
+          ctx.stroke();
+        }
+        for (let y = 0; y < ROWS; y++) {
+          for (let x = 0; x < COLS; x++) {
+            if (board[y][x]) drawCell(ctx, x, y, board[y][x], CELL);
+          }
+        }
+        if (piece && state !== "over" && state !== "won") {
+          let ghostY = piece.y;
+          while (!collides(piece.shape, piece.x, ghostY + 1)) ghostY++;
+          ctx.globalAlpha = 0.22;
+          paintPiece(piece, ghostY);
+          ctx.globalAlpha = 1;
+          paintPiece(piece, piece.y);
+        }
+      }
+
+      function paintPiece(activePiece, y) {
+        for (let row = 0; row < activePiece.shape.length; row++) {
+          for (let col = 0; col < activePiece.shape[row].length; col++) {
+            if (activePiece.shape[row][col] && y + row >= 0) {
+              drawCell(ctx, activePiece.x + col, y + row, activePiece.type, CELL);
+            }
+          }
+        }
+      }
+
+      function drawNext() {
+        nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+        nextCtx.fillStyle = "#f1eee5";
+        nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+        const shape = SHAPES[nextType];
+        const size = 18;
+        const offsetX = (nextCanvas.width - shape[0].length * size) / 2;
+        const offsetY = (nextCanvas.height - shape.length * size) / 2;
+        nextCtx.save();
+        nextCtx.translate(offsetX, offsetY);
+        for (let row = 0; row < shape.length; row++) {
+          for (let col = 0; col < shape[row].length; col++) {
+            if (shape[row][col]) drawCell(nextCtx, col, row, nextType, size);
+          }
+        }
+        nextCtx.restore();
+      }
+
+      function drawHold() {
+        holdCtx.clearRect(0, 0, holdCanvas.width, holdCanvas.height);
+        holdCtx.fillStyle = "#f1eee5";
+        holdCtx.fillRect(0, 0, holdCanvas.width, holdCanvas.height);
+        $("#hold-copy").textContent = holdUsed ? "本塊已使用\n等下塊落鎖" : "每塊可持有\n或交換一次";
+        if (!heldType) {
+          holdCtx.fillStyle = "#76766e";
+          holdCtx.font = "11px ui-monospace, monospace";
+          holdCtx.textAlign = "center";
+          holdCtx.fillText("EMPTY", holdCanvas.width / 2, holdCanvas.height / 2 + 4);
+          return;
+        }
+        const shape = SHAPES[heldType];
+        const size = 18;
+        const offsetX = (holdCanvas.width - shape[0].length * size) / 2;
+        const offsetY = (holdCanvas.height - shape.length * size) / 2;
+        holdCtx.save();
+        holdCtx.translate(offsetX, offsetY);
+        for (let row = 0; row < shape.length; row++) {
+          for (let col = 0; col < shape[row].length; col++) {
+            if (shape[row][col]) drawCell(holdCtx, col, row, heldType, size);
+          }
+        }
+        holdCtx.restore();
+      }
+
+      function updateUI() {
+        const level = LEVELS[levelIndex];
+        $("#level-label").textContent = String(levelIndex + 1).padStart(2, "0");
+        $("#boss-name").textContent = level.name;
+        $("#boss-caption").textContent = `${level.title} · 每 12 秒加速`;
+        $("#boss-hp-text").textContent = `${bossHp} / ${level.hp}`;
+        const hpBar = $("#boss-hp-fill");
+        hpBar.style.width = `${(bossHp / level.hp) * 100}%`;
+        hpBar.parentElement.setAttribute("aria-valuemax", String(level.hp));
+        hpBar.parentElement.setAttribute("aria-valuenow", String(bossHp));
+        $("#score").textContent = String(score).padStart(5, "0");
+        $("#lines").textContent = String(clearedLines);
+        $("#combo").textContent = `×${combo}`;
+        $("#damage").textContent = lastDamage === null ? "—" : String(lastDamage);
+        $("#speed").textContent = `${(level.speed / currentDropInterval()).toFixed(1)}×`;
+        drawHold();
+      }
+
+      function handleAction(action) {
+        if (action === "left") move(-1, 0);
+        else if (action === "right") move(1, 0);
+        else if (action === "down") {
+          if (move(0, 1)) score++;
+          updateUI();
+        } else if (action === "rotate") tryRotate();
+        else if (action === "drop") hardDrop();
+        else if (action === "hold") holdPiece();
+      }
+
+      document.addEventListener("keydown", (event) => {
+        const key = event.key;
+        if (["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp", " "].includes(key)) event.preventDefault();
+        if (key.toLowerCase() === "r") resetGame();
+        else if (key.toLowerCase() === "p") togglePause();
+        else if (key.toLowerCase() === "c") handleAction("hold");
+        else if (key === "ArrowLeft") handleAction("left");
+        else if (key === "ArrowRight") handleAction("right");
+        else if (key === "ArrowDown") handleAction("down");
+        else if (key === "ArrowUp") handleAction("rotate");
+        else if (key === " ") handleAction("drop");
+      });
+
+      document.querySelectorAll("[data-action]").forEach((button) => {
+        button.addEventListener("click", () => handleAction(button.dataset.action));
+      });
+      $("#pause-button").addEventListener("click", togglePause);
+      $("#restart-button").addEventListener("click", resetGame);
+
+      function frame(timestamp) {
+        if (state === "playing") {
+          const delta = previousFrame ? Math.min(timestamp - previousFrame, 100) : 0;
+          runElapsed += delta;
+          dropElapsed += delta;
+          const nextSpeedStep = Math.floor(runElapsed / 12000);
+          if (nextSpeedStep !== speedStep) {
+            speedStep = nextSpeedStep;
+            updateUI();
+          }
+          if (attackWarning) {
+            attackCountdown -= delta;
+            renderBossWarning();
+            if (attackCountdown <= 0) resolveBossAttack();
+          } else {
+            attackElapsed += delta;
+            if (attackElapsed >= LEVELS[levelIndex].attackInterval) startBossWarning();
+          }
+          if (dropElapsed >= currentDropInterval()) {
+            dropElapsed = 0;
+            dropOne();
+          }
+        }
+        previousFrame = timestamp;
+        requestAnimationFrame(frame);
+      }
+
+      resetGame();
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
